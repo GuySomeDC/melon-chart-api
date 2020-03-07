@@ -298,3 +298,100 @@ class Fivechart:
         plt.subplots_adjust(left=0.02, right=0.98, top=0.950, bottom=0.05)
         plt.savefig(img_path)
         plt.close("all")
+
+class Countnum:
+    class Song:
+        def __init__(self, d):
+            self.songname = d["SONGNAME"]
+            self.artist = d["ARTIST"]
+            self.count = int(d["COUNT"])
+            self.male = float(d["MALE"])
+            self.female = float(d["FEMALE"])
+            self.age10 = float(d["AGE10"])
+            self.age20 = float(d["AGE20"])
+            self.age30 = float(d["AGE30"])
+            self.age40 = float(d["AGE40"])
+            self.age50 = float(d["AGE50"])
+            self.age60 = float(d["AGE60"])
+            self.songid = int(d["SONGID"])
+            self.albumimg = d["ALBUMIMG"]
+
+        def getMale(self):
+            return round(self.count * self.male * 0.01)
+
+        def getFemale(self):
+            return round(self.count * self.female * 0.01)
+
+        def getAge10(self):
+            return round(self.count * self.age10 * 0.01)
+
+        def getAge20(self):
+            return round(self.count * self.age20 * 0.01)
+
+        def getAge30(self):
+            return round(self.count * self.age30 * 0.01)
+
+        def getAge40(self):
+            return round(self.count * self.age40 * 0.01)
+
+        def getAge50(self):
+            return round(self.count * self.age50 * 0.01)
+
+        def getAge60(self):
+            return round(self.count * self.age60 * 0.01)
+
+    def __init__(self):
+        self._session = requests.Session()
+        self._session.headers["User-Agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+        self.refresh()
+
+    def refresh(self):
+        self._result = self._session.get("https://www.melon.com/chart/index.htm", timeout=3)
+
+    def getHour(self):
+        soup = BeautifulSoup(self._result.text, "html.parser")
+        return int(soup.find("span", {"class": "hhmm"}).find("span", {"class": "hour"}).text.strip()[:2])
+
+    def getDate(self):
+        soup = BeautifulSoup(self._result.text, "html.parser")
+        return int(soup.find("span", {"class": "yyyymmdd"}).find("span", {"class": "year"}).text.strip().replace(".", ""))
+
+    def getDatetime(self):
+        soup = BeautifulSoup(self._result.text, "html.parser")
+        date = soup.find("span", {"class": "yyyymmdd"}).find("span", {"class": "year"}).text.strip().replace(".", "-")
+        hour = soup.find("span", {"class": "hhmm"}).find("span", {"class": "hour"}).text.strip()
+        return datetime.strptime(date + " " + hour, "%Y-%m-%d %H:%M")
+
+    def getChartdata(self):
+        data = []
+        soup = BeautifulSoup(self._result.text, "html.parser")
+        count = soup.find_all("div", {"class": "count_num"})
+        man = soup.find_all('li', {'class': 'man'})
+        woman = soup.find_all('li', {'class': 'woman'})
+        age = soup.find_all('ul', {'class': 'age_group'})
+        btn_link = soup.find_all('div', {'class': 'btn_like'})
+        tit = soup.find_all("span", {"class": "tit"})
+        wrap_artist = soup.find_all("div", {"class": "song_info_cont2"})
+        song_info_cont = soup.find_all("div", {"class": "song_info_cont"})
+        try:
+            for i in range(0, len(count)):
+                data.append(self.Song({
+                    "SONGNAME": tit[i].text.strip(),
+                    "ARTIST": ", ".join([w.text.strip() for w in wrap_artist[i].find("div", {"class": "wrap_atist"}).find_all("span")]),
+                    "SONGID": int(btn_link[i].find("button")["data-song-no"]),
+                    "ALBUMIMG": song_info_cont[i].find("img")["src"],
+                    "COUNT": int(count[i].find("em").text.strip().replace(",", "")),
+                    "MALE": float(man[i]['style'].replace('width:', '').replace('%;','')),
+                    "FEMALE": float(woman[i]['style'].replace('width:', '').replace('%;', '')),
+                    "AGE10": float(age[i].find('li', {'class': 'nth1'}).find_all('span')[1].find('span')['style'].replace('height:', '').replace('%', '')),
+                    "AGE20": float(age[i].find('li', {'class': 'nth2'}).find_all('span')[1].find('span')['style'].replace('height:', '').replace('%', '')),
+                    "AGE30": float(age[i].find('li', {'class': 'nth3'}).find_all('span')[1].find('span')['style'].replace('height:', '').replace('%', '')),
+                    "AGE40": float(age[i].find('li', {'class': 'nth4'}).find_all('span')[1].find('span')['style'].replace('height:', '').replace('%', '')),
+                    "AGE50": float(age[i].find('li', {'class': 'nth5'}).find_all('span')[1].find('span')['style'].replace('height:', '').replace('%', '')),
+                    "AGE60": float(age[i].find('li', {'class': 'nth6'}).find_all('span')[1].find('span')['style'].replace('height:', '').replace('%', '')),
+                }))
+        except:
+            print("아직 이용자수가 갱신되지 않았습니다.")
+            return None
+
+        return data
