@@ -11,9 +11,9 @@ for d in data:
     print(d.currank, d.songname, d.data)
 realgraph.getGraph(font_path="/Users/guysome/Library/Fonts/NanumBarunGothic.ttf", img_path="realgraph.png")
 
-'''차트 갱신을 원할 경우
+
 realgraph.refresh()
-'''
+
 
 #ex2) 실시간 차트
 realchart = melonapi.Realchart()
@@ -23,9 +23,9 @@ data = realchart.getChartdata()
 for d in data:
     print(d.currank, d.updown, d.rankgap, d.songname)
 
-'''차트 갱신을 원할 경우
+
 realchart.refresh()
-'''
+
 
 #ex3) 5분 차트
 fivechart = melonapi.Fivechart()
@@ -36,6 +36,15 @@ for d in data:
     print(d.songname, d.data)
 fivechart.getGraph(font_path="/Users/guysome/Library/Fonts/NanumBarunGothic.ttf", img_path="fivechart.png")
 
-'''차트 갱신을 원할 경우
+
 fivechart.refresh()
-'''
+
+#ex4) 이용자수
+countnum = melonapi.Countnum()
+datetime = countnum.getDatetime()
+print(datetime.strftime("%Y%m%d %H:%M"))
+data = countnum.getChartdata()
+for d in data:
+    print(d.songname, d.artist, d.songid, d.count, d.male, d.female, d.age10, d.age20, d.age30, d.age40, d.age50, d.age60)
+    print(d.getMale(), d.getFemale(), d.getAge10(), d.getAge20(), d.getAge30(), d.getAge40(), d.getAge50(), d.getAge60())
+countnum.refresh()
