@@ -58,7 +58,7 @@ fivechart.refresh()
 ```
 
 # 3. Realchart Class
-###Inner Class
+### Inner Class
 Song Class
 - currank : 순위 (int)
 - pastrank : 전시간대 순위 (int)
@@ -69,7 +69,7 @@ Song Class
 - albumimg : 앨범 이미지 (str, url)
 - songid : 곡 코드 (int)
 
-###Method
+### Method
 - refresh() None : 차트를 갱신합니다.
 - getHour() int : 불러온 차트의 시간을 return 합니다.
 - getDate() int : 불러온 차트의 날짜를 8자리의 정수로 return 합니다.
@@ -78,13 +78,13 @@ Song Class
 
 
 # 4. Realgraph Class
-###Inner Class
+### Inner Class
 Song Class
 - currank : 순위 (int)
 - data : 실수치 (list of float)
 - songname : 곡명 (str)
 
-###Method
+### Method
 - refresh() None : 차트를 갱신합니다.
 - getHour() int : 불러온 차트의 시간을 return 합니다.
 - getDate() int : 불러온 차트의 날짜를 8자리의 정수로 return 합니다.
@@ -94,13 +94,13 @@ Song Class
 - getGraph(font_path, img_path) None : 불러온 차트를 matplotlib를 이용해 그래프를 생성 및 저장합니다.
 
 # 5. Fivechart Class
-###Inner Class
+### Inner Class
 Song Class
 - songid : 곡 코드 (int)
 - data : 실수치 (list of float)
 - songname : 곡명 (str)
 
-###Method
+### Method
 - refresh() None : 차트를 갱신합니다.
 - getMinute() int : 불러온 차트의 분을 return 합니다.
 - getHour() int : 불러온 차트의 시간을 return 합니다.
