@@ -27,9 +27,9 @@ for d in data:
     print(d.currank, d.songname, d.data)
 realgraph.getGraph(font_path="/Users/guysome/Library/Fonts/NanumBarunGothic.ttf", img_path="realgraph.png")
 
-'''차트 갱신을 원할 경우
+
 realgraph.refresh()
-'''
+
 
 #ex2) 실시간 차트
 realchart = melonapi.Realchart()
@@ -39,9 +39,9 @@ data = realchart.getChartdata()
 for d in data:
     print(d.currank, d.updown, d.rankgap, d.songname)
 
-'''차트 갱신을 원할 경우
+
 realchart.refresh()
-'''
+
 
 #ex3) 5분 차트
 fivechart = melonapi.Fivechart()
@@ -52,9 +52,18 @@ for d in data:
     print(d.songname, d.data)
 fivechart.getGraph(font_path="/Users/guysome/Library/Fonts/NanumBarunGothic.ttf", img_path="fivechart.png")
 
-'''차트 갱신을 원할 경우
+
 fivechart.refresh()
-'''
+
+#ex4) 이용자수
+countnum = melonapi.Countnum()
+datetime = countnum.getDatetime()
+print(datetime.strftime("%Y%m%d %H:%M"))
+data = countnum.getChartdata()
+for d in data:
+    print(d.songname, d.artist, d.songid, d.count, d.male, d.female, d.age10, d.age20, d.age30, d.age40, d.age50, d.age60)
+    print(d.getMale(), d.getFemale(), d.getAge10(), d.getAge20(), d.getAge30(), d.getAge40(), d.getAge50(), d.getAge60())
+countnum.refresh()
 ```
 
 # 3. Realchart Class
@@ -108,3 +117,33 @@ Song Class
 - getDatetime() datetime : 불러온 차트의 날짜와 시간을 datetime 객체로 return 합니다.
 - getChartdata() list of Song : 불러온 차트의 데이터를 Song 객체의 list 형태로 return 합니다.
 - getGraph(font_path, img_path) None : 불러온 차트를 matplotlib를 이용해 그래프를 생성 및 저장합니다.
+
+# 6. Countnum Class
+### Inner Class
+Song Class
+- songname : 곡명 (str)
+- artist : 가수명 (str)
+- count : 이용자수 (int)
+- male : 남성 비율 (float)
+- female : 여성 비율 (float)
+- age10 : 10대 비율 (float)
+- age20 : 20대 비율 (float)
+- age30 : 30대 비율 (float)
+- age40 : 40대 비율 (float)
+- age50 : 50대 비율 (float)
+- age60 : 60대 비율 (float)
+- getMale() int : 남성 이용자수
+- getFemale() int : 여성 이용자수
+- getAge10() int : 10대 이용자수
+- getAge20() int : 20대 이용자수
+- getAge30() int : 30대 이용자수
+- getAge40() int : 40대 이용자수
+- getAge50() int : 50대 이용자수
+- getAge60() int : 60대 이용자수
+
+### Method
+- refresh() None : 차트를 갱신합니다.
+- getHour() int : 불러온 차트의 시간을 return 합니다.
+- getDate() int : 불러온 차트의 날짜를 8자리의 정수로 return 합니다.
+- getDatetime() datetime : 불러온 차트의 날짜와 시간을 datetime 객체로 return 합니다.
+- getChartdata() list of Song : 불러온 차트의 데이터를 Song 객체의 list 형태로 return 합니다.
