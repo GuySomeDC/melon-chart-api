@@ -206,6 +206,9 @@ class Fivechart:
         self._result = self._session.get("https://www.melon.com/chart/index.htm", timeout=3)
         self._data = self._parseFive()
 
+    def getLength(self):
+        return self.getDatetime().minute // 5 + 1
+
     def getMinute(self):
         return self.getDatetime().minute
 
