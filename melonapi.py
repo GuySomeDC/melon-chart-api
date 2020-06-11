@@ -426,12 +426,8 @@ class Dailychart:
 
     def getDate(self):
         soup = BeautifulSoup(self._result.text, "html.parser")
-        return int(soup.find("span", {"class": "yyyymmdd"}).find("span", {"class": "year"}).text.strip().replace(".", ""))
-
-    def getDatetime(self):
-        soup = BeautifulSoup(self._result.text, "html.parser")
         date = soup.find("span", {"class": "yyyymmdd"}).find("span", {"class": "year"}).text.strip()
-        return datetime.strptime(date, "%Y.%m.%d")
+        return datetime.strptime(date, "%Y.%m.%d").date()
 
     def getChartdata(self):
         data = []
@@ -470,27 +466,6 @@ class Dailychart:
 
 
 class Detailinfo:
-    class Song:
-        def __init__(self, data):
-            try:
-                self.currank = int(data["YESTERCHARTINFO"]["RANK"])
-            except:
-                self.currank = 1001
-            self.count = int(data["STREPORT"]["LISTNERCNT"])
-            self.male = float(data["STREPORT"]["MALE"])
-            self.female = float(data["STREPORT"]["FEMALE"])
-            self.age10 = float(data["STREPORT"]["AGE10"])
-            self.age20 = float(data["STREPORT"]["AGE20"])
-            self.age30 = float(data["STREPORT"]["AGE30"])
-            self.age40 = float(data["STREPORT"]["AGE40"])
-            self.age50 = float(data["STREPORT"]["AGE50"])
-            self.age60 = float(data["STREPORT"]["AGE60"])
-            self.songname = data["SONGNAME"]
-            self.artist = ", ".join([d["ARTISTNAME"] for d in data["ARTISTLIST"]])
-            self.albumimg = data["ALBUMINFO"]["ALBUMIMG"]
-            self.songid = int(data["SONGID"])
-            self.date = datetime.strptime(data["STREPORT"]["DATE"], "%Y.%m.%d")
-
     def __init__(self, songid):
         self._songid = songid
         self._session = requests.Session()
@@ -506,6 +481,55 @@ class Detailinfo:
             "songId": self._songid
         }
         self._result = self._session.get("https://m.app.melon.com/song/detailInfo.json", params=params, timeout=3).json()["response"]
+        try:
+            self.currank = int(self._result["YESTERCHARTINFO"]["RANK"])
+        except:
+            self.currank = 1001
+        self.count = int(self._result["STREPORT"]["LISTNERCNT"])
+        self.male = float(self._result["STREPORT"]["MALE"])
+        self.female = float(self._result["STREPORT"]["FEMALE"])
+        self.age10 = float(self._result["STREPORT"]["AGE10"])
+        self.age20 = float(self._result["STREPORT"]["AGE20"])
+        self.age30 = float(self._result["STREPORT"]["AGE30"])
+        self.age40 = float(self._result["STREPORT"]["AGE40"])
+        self.age50 = float(self._result["STREPORT"]["AGE50"])
+        self.age60 = float(self._result["STREPORT"]["AGE60"])
+        self.songname = self._result["SONGNAME"]
+        self.artist = ", ".join([d["ARTISTNAME"] for d in self._result["ARTISTLIST"]])
+        self.albumimg = self._result["ALBUMINFO"]["ALBUMIMG"]
+        self.songid = int(self._result["SONGID"])
+        self.date = datetime.strptime(self._result["STREPORT"]["DATE"], "%Y.%m.%d").date()
+        try:
+            self._recordinfo = self._result["RECORDINFO"]
+            self.recordlist = [r["RECORD"] for r in self._recordinfo["RECORDLIST"]]
+        except:
+            self._recordinfo = None
+            self.recordlist = []
+        try:
+            self.firstrankinfo = self._result["YESTERCHARTINFO"]["FIRSTRANKINFO"]
+        except:
+            self.firstrankinfo = None
 
-    def getData(self):
-        return self.Song(self._result)
+    def getMale(self):
+        return round(self.count * self.male * 0.01)
+
+    def getFemale(self):
+        return round(self.count * self.female * 0.01)
+
+    def getAge10(self):
+        return round(self.count * self.age10 * 0.01)
+
+    def getAge20(self):
+        return round(self.count * self.age20 * 0.01)
+
+    def getAge30(self):
+        return round(self.count * self.age30 * 0.01)
+
+    def getAge40(self):
+        return round(self.count * self.age40 * 0.01)
+
+    def getAge50(self):
+        return round(self.count * self.age50 * 0.01)
+
+    def getAge60(self):
+        return round(self.count * self.age60 * 0.01)
