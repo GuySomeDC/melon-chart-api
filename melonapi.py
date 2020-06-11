@@ -4,6 +4,7 @@ from datetime import *
 import re
 import json
 
+
 class Realchart:
     class Song:
         def __init__(self, data):
@@ -72,6 +73,7 @@ class Realchart:
             data.append(self.Song(d))
 
         return data
+
 
 class Realgraph:
     class Song:
@@ -190,6 +192,7 @@ class Realgraph:
         plt.savefig(img_path, facecolor=fig.get_facecolor())
         plt.close("all")
 
+
 class Fivechart:
     class Song:
         def __init__(self, d):
@@ -302,6 +305,7 @@ class Fivechart:
         plt.savefig(img_path)
         plt.close("all")
 
+
 class Countnum:
     class Song:
         def __init__(self, d):
@@ -398,3 +402,110 @@ class Countnum:
             return None
 
         return data
+
+
+class Dailychart:
+    class Song:
+        def __init__(self, data):
+            self.currank = int(data["CURRANK"])
+            self.pastrank = int(data["PASTRANK"])
+            self.rankgap = int(data["RANKGAP"])
+            self.updown = data["UPDOWN"]
+            self.songname = data["SONGNAME"]
+            self.artist = data["ARTIST"]
+            self.albumimg = data["ALBUMIMG"]
+            self.songid = int(data["SONGID"])
+
+    def __init__(self):
+        self._session = requests.Session()
+        self._session.headers["User-Agent"] = "AS40; Android 8.0.0; 4.8.3; SM-G935S"
+        self.refresh()
+
+    def refresh(self):
+        self._result = self._session.get("https://www.melon.com/chart/day/index.htm", timeout=3)
+
+    def getDate(self):
+        soup = BeautifulSoup(self._result.text, "html.parser")
+        return int(soup.find("span", {"class": "yyyymmdd"}).find("span", {"class": "year"}).text.strip().replace(".", ""))
+
+    def getDatetime(self):
+        soup = BeautifulSoup(self._result.text, "html.parser")
+        date = soup.find("span", {"class": "yyyymmdd"}).find("span", {"class": "year"}).text.strip()
+        return datetime.strptime(date, "%Y.%m.%d")
+
+    def getChartdata(self):
+        data = []
+        soup = BeautifulSoup(self._result.text, "html.parser")
+        lst50 = soup.find_all("tr", {"class": "lst50"})
+        lst100 = soup.find_all("tr", {"class": "lst100"})
+        for l in lst50 + lst100:
+            d = {
+                "CURRANK": int(l.find("span", {"class": "rank"}).text.strip()),
+                "SONGNAME": l.find("div", {"class": "rank01"}).text.strip(),
+                "ARTIST": l.find("div", {"class", "rank02"}).text.strip(),
+                "SONGID": l["data-song-no"],
+                "ALBUMIMG": l.find("img")["src"]
+            }
+            try:
+                d["UPDOWN"] = "UP"
+                d["RANKGAP"] = int(l.find("span", {"class": "up"}).text.strip())
+                d["PASTRANK"] = d["CURRANK"] + d["RANKGAP"]
+            except:
+                try:
+                    d["UPDOWN"] = "DOWN"
+                    d["RANKGAP"] = int(l.find("span", {"class": "down"}).text.strip())
+                    d["PASTRANK"] = d["CURRANK"] - d["RANKGAP"]
+                except:
+                    try:
+                        d["UPDOWN"] = "NONE"
+                        d["RANKGAP"] = int(l.find("span", {"class": "rank_wrap"}).find("span", {"class": "none"}).text.strip().replace("순위 동일", "0"))
+                        d["PASTRANK"] = d["CURRANK"]
+                    except:
+                        d["UPDOWN"] = "NEW"
+                        d["RANKGAP"] = 0
+                        d["PASTRANK"] = 0
+            data.append(self.Song(d))
+
+        return data
+
+
+class Detailinfo:
+    class Song:
+        def __init__(self, data):
+            try:
+                self.currank = int(data["YESTERCHARTINFO"]["RANK"])
+            except:
+                self.currank = 1001
+            self.count = int(data["STREPORT"]["LISTNERCNT"])
+            self.male = float(data["STREPORT"]["MALE"])
+            self.female = float(data["STREPORT"]["FEMALE"])
+            self.age10 = float(data["STREPORT"]["AGE10"])
+            self.age20 = float(data["STREPORT"]["AGE20"])
+            self.age30 = float(data["STREPORT"]["AGE30"])
+            self.age40 = float(data["STREPORT"]["AGE40"])
+            self.age50 = float(data["STREPORT"]["AGE50"])
+            self.age60 = float(data["STREPORT"]["AGE60"])
+            self.songname = data["SONGNAME"]
+            self.artist = ", ".join([d["ARTISTNAME"] for d in data["ARTISTLIST"]])
+            self.albumimg = data["ALBUMINFO"]["ALBUMIMG"]
+            self.songid = int(data["SONGID"])
+            self.date = datetime.strptime(data["STREPORT"]["DATE"], "%Y.%m.%d")
+
+    def __init__(self, songid):
+        self._songid = songid
+        self._session = requests.Session()
+        self._session.headers["User-Agent"] = "AS40; Android 8.0.0; 4.8.3; SM-G935S"
+        self.refresh()
+
+    def refresh(self):
+        params = {
+            "cpId": "AS40",
+            "cpKey": "14LNC3",
+            "v": "4.1",
+            "resolution": "4",
+            "songId": self._songid
+        }
+        self._result = self._session.get("https://m.app.melon.com/song/detailInfo.json", params=params, timeout=3).json()["response"]
+
+    def getData(self):
+        return self.Song(self._result)
