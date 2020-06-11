@@ -51,12 +51,11 @@ countnum.refresh()
 
 #ex5) 일간차트
 dailychart = melonapi.Dailychart()
-datetime = dailychart.getDatetime()
-print(datetime.strftime("%Y%m%d"))
+datetime = dailychart.getDate()
+print(datetime)
 data = dailychart.getChartdata()
 for d in data:
     print(d.currank, d.updown, d.rankgap, d.songname, d.songid)
     #ex6) 곡 상세정보
     detail = melonapi.Detailinfo(d.songid)
-    detail_data = detail.getData()
-    print(detail_data.currank, detail_data.count, detail_data.male, detail_data.female, detail_data.age10, detail_data.age20, detail_data.age30, detail_data.age40, detail_data.age50, detail_data.age60)
+    print(detail.currank, detail.count, detail.male, detail.female, detail.age10, detail.age20, detail.age30, detail.age40, detail.age50, detail.age60, detail.firstrankinfo, detail.recordlist)
