@@ -147,3 +147,51 @@ Song Class
 - getDate() int : 불러온 차트의 날짜를 8자리의 정수로 return 합니다.
 - getDatetime() datetime : 불러온 차트의 날짜와 시간을 datetime 객체로 return 합니다.
 - getChartdata() list of Song : 불러온 차트의 데이터를 Song 객체의 list 형태로 return 합니다.
+
+# 7. Dailychart Class
+### Inner Class
+Song Class
+- currank : 순위 (int)
+- pastrank : 전시간대 순위 (int)
+- rankgap : 순위 변동 (int)
+- updown : 순위 변동 유형 (str) / UP(상승), DOWN(하락), NEW(진입), NONE(유지)
+- songname : 곡명 (str)
+- artist : 가수명 (str)
+- albumimg : 앨범 이미지 (str, url)
+- songid : 곡 코드 (int)
+
+### Method
+- refresh() None : 차트를 갱신합니다.
+- getDate() date : 불러온 차트의 날짜를 date 객체로 return 합니다.
+- getChartdata() list of Song : 불러온 차트의 데이터를 Song 객체의 list 형태로 return 합니다.
+
+# 8. Detailinfo Class
+- currank : 일간 차트 순위 (int)
+- songname : 곡명 (str)
+- artist : 가수명 (str)
+- albumimg : 앨범 이미지 (str)
+- songid : 곡 코드 (int)
+- date : 리포트 갱신 일자 (date)
+- count : 이용자수 (int)
+- male : 남성 비율 (float)
+- female : 여성 비율 (float)
+- age10 : 10대 비율 (float)
+- age20 : 20대 비율 (float)
+- age30 : 30대 비율 (float)
+- age40 : 40대 비율 (float)
+- age50 : 50대 비율 (float)
+- age60 : 60대 비율 (float)
+- firstrankinfo : 최고 순위, 1위 횟수 등 (str)
+- recordlist : 이 곡의 기록 목록 (list)
+
+### Method
+- getMale() int : 남성 이용자수
+- getFemale() int : 여성 이용자수
+- getAge10() int : 10대 이용자수
+- getAge20() int : 20대 이용자수
+- getAge30() int : 30대 이용자수
+- getAge40() int : 40대 이용자수
+- getAge50() int : 50대 이용자수
+- getAge60() int : 60대 이용자수
+- refresh() None : 곡 상세정보를 갱신합니다.
+- getData() Song : 불러온 곡 상세정보 데이터를 Song 객체로 return 합니다.
